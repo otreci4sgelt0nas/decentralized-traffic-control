@@ -27,6 +27,6 @@ def view_database():
                 print(row)
         else:
             print("No data found in the 'weekly_limits' table.")
-
+    
 if __name__ == "__main__":
     view_database()
