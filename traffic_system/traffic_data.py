@@ -1,44 +1,28 @@
-import json
-from datetime import datetime
+import sqlite3
 
-# File to store logged data
-LOG_FILE = 'traffic_data_log.json'
+DB_FILE = 'data/traffic_data.db'
 
-def log_car_data(car_id, speed):
-    """
-    Log the car ID and speed in a JSON file.
+def get_average_speed():
+    """Calculate and return the average speed of all recorded vehicles."""
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT AVG(speed) FROM cars")
+        result = cursor.fetchone()
+        average_speed = result[0] if result[0] is not None else 0
+        return average_speed
 
-    Parameters:
-    - car_id (str): The unique ID of the car
-    - speed (int): The current speed of the car
-    """
-    log_entry = {
-        'car_id': car_id,
-        'speed': speed,
-        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
-
-    # Open the log file and append data
-    try:
-        with open(LOG_FILE, 'a') as log_file:
-            json.dump(log_entry, log_file)
-            log_file.write('\n')  # Newline for each log entry
-    except Exception as e:
-        print(f"Error logging car data: {e}")
-
-def get_traffic_log():
-    """
-    Retrieve the logged traffic data.
-
-    Returns:
-    - data (list): List of logged car speed data
-    """
-    try:
-        with open(LOG_FILE, 'r') as log_file:
-            data = [json.loads(line) for line in log_file]
-        return data
-    except FileNotFoundError:
-        return []
-    except Exception as e:
-        print(f"Error reading log file: {e}")
-        return []
+def update_weekly_speed_limit(new_limit):
+    """Update and log the new weekly speed limit."""
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.cursor()
+        
+        # Ensure table for storing weekly speed limits exists
+        cursor.execute('''CREATE TABLE IF NOT EXISTS weekly_limits (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            speed_limit REAL,
+                            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                          )''')
+        
+        # Insert new weekly speed limit
+        cursor.execute("INSERT INTO weekly_limits (speed_limit) VALUES (?)", (new_limit,))
+        conn.commit()
