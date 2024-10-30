@@ -8,15 +8,17 @@ def initialize_database():
         cursor = conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS cars (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            license_plate TEXT,
                             speed REAL,
                             recorded_date DATE
                           )''')
         conn.commit()
 
-def log_car_speed(speed):
+def log_car_speed(license_plate, speed):
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO cars (speed, recorded_date) VALUES (?, ?)", (speed, date.today()))
+        cursor.execute("INSERT INTO cars (license_plate, speed, recorded_date) VALUES (?, ?, ?)", 
+                       (license_plate, speed, date.today()))
         conn.commit()
 
 def get_daily_average_speed():
@@ -31,13 +33,12 @@ def get_cars_exceeding_threshold():
     threshold = avg_speed + 5
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, speed FROM cars WHERE recorded_date = ? AND speed > ?", (date.today(), threshold))
+        cursor.execute("SELECT id, license_plate, speed FROM cars WHERE recorded_date = ? AND speed > ?", 
+                       (date.today(), threshold))
         return cursor.fetchall()
 
-# New function to fetch and display all car speeds from the database
 def get_all_car_speeds():
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM cars")
-        all_data = cursor.fetchall()
-        return all_data
+        cursor.execute("SELECT id, license_plate, speed, recorded_date FROM cars")
+        return cursor.fetchall()

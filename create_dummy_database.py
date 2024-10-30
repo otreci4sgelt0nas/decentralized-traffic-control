@@ -1,7 +1,7 @@
 import sqlite3
 
 # Define the path for the database
-db_path = 'traffic_data.db'
+db_path = 'data/traffic_data.db'
 
 # Data to be inserted
 data = [

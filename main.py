@@ -2,7 +2,6 @@ from traffic_system.traffic_data import log_car_speed, get_daily_average_speed, 
 
 def main():
     # initialize_database()
-
     
     # Calculate the daily average speed
     average_speed = get_daily_average_speed()
@@ -12,8 +11,8 @@ def main():
     violators = get_cars_exceeding_threshold()
     if violators:
         print("Cars exceeding speed limit and subject to fines:")
-        for car_id, speed in violators:
-            print(f"Car ID: {car_id}, Speed: {speed} km/h")
+        for car_id, license_plate, speed in violators:
+            print(f"Car ID: {car_id}, License Plate: {license_plate}, Speed: {speed} km/h")
     else:
         print("No violations today.")
     
@@ -21,8 +20,8 @@ def main():
     print("\nAll recorded car speeds:")
     all_data = get_all_car_speeds()
     for record in all_data:
-        car_id, speed, recorded_date = record
-        print(f"Car ID: {car_id}, Speed: {speed} km/h, Date: {recorded_date}")
+        car_id, license_plate, speed, recorded_date = record
+        print(f"Car ID: {car_id}, License Plate: {license_plate}, Speed: {speed} km/h, Date: {recorded_date}")
 
 if __name__ == "__main__":
     main()
